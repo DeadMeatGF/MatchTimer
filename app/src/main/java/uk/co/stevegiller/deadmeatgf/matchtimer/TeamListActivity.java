@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,8 +19,12 @@ import java.util.ArrayList;
 
 
 public class TeamListActivity extends Activity {
+    private static final String TAG = "TeamListActivity";
+
     private ListView myList;
     private MyAdapter myAdapter;
+    private int currentView = -1;
+    private String currentString = "";
 
     /** Called when the activity is first created. */
     @Override
@@ -74,17 +79,28 @@ public class TeamListActivity extends Activity {
             //Fill EditText with the value you have in data source
 //            holder.caption.setText(myItems.get(position).caption);
             holder.caption.setText("Player Name");
+            holder.caption.setTag(R.id.TAG_NAME_PLACEHOLDER_ID, "Player Name");
             holder.caption.setId(position);
 
             //we need to update adapter once we finish with editing
             holder.caption.setOnFocusChangeListener(new View.OnFocusChangeListener() {
                 public void onFocusChange(View v, boolean hasFocus) {
-                    if (!hasFocus){
-                        final int position = v.getId();
-                        final EditText Caption = (EditText) v;
-//                        myItems.get(position).caption = Caption.getText().toString();
-                        Toast.makeText(getApplicationContext(), Caption.getText().toString(), Toast.LENGTH_LONG).show();
+                    final int position = v.getId();
+                    final EditText Caption = (EditText) v;
+                    Log.d(TAG, "Entry position: " + currentView + " - View position: " + position);
+                    if(position != currentView) {
+                        if (!hasFocus) {
+                            //                        myItems.get(position).caption = Caption.getText().toString();
+                            Log.d(TAG, "Does not have focus");
+                        }
+                        if (hasFocus) {
+                            Log.d(TAG, "Does have focus - New player. Last Name: " + currentString + " - New Name: " + Caption.getText().toString());
+                            currentString = Caption.getText().toString();
+                        }
+                        currentView = position;
+                        Log.d(TAG, "Exit position: " + currentView);
                     }
+                    currentString = Caption.getText().toString();
                 }
             });
 
